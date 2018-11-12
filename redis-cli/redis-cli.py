@@ -3,7 +3,7 @@
 #
 # This script want to getting modified modules.
 #
-# -*- coding: UTF-8 -*- 
+# -*- coding: UTF-8 -*-
 import redis
 import argparse
 import textwrap
@@ -11,12 +11,11 @@ import sys
 import operator
 import os
 import pymysql.cursors
-
+from prettytable import PrettyTable
 
 global redis_pool
 
 class RedisOperator:
-
 	def __init__(self,redis):
 		self.redis=redis
 
@@ -36,9 +35,6 @@ class RedisOperator:
 		value=redis.get(cmdLines[1])
 		print((value is None and '' or str(value ,"utf8").strip()))
 		
-	def setnx(self,line):
-		cmdLines=line.split()
-
 	def get(self,line):
 		cmdLines=line.split()
 		if (len(cmdLines)<2):
@@ -94,16 +90,33 @@ class RedisOperator:
 		print(str(redis.get(cmdLines[1]),"utf8").strip())
 
 class MysqlOperator:
-	def select():
+	def __init__(self, cmd):
 		pass
+
+	def select(self,sql):
+		try:
+			with self.conn as cursor:
+				cursor.execute(sql)
+				for row in cursor:
+					print(row)
+    
+		except Exception as e:
+			print(e);return
+
+
+	def destory(self):
+		if self.conn is not NoneType:
+			self.conn.close()
 
 
 class RedisCmdExcutor:
+	__supportCmds=["quit","set","get","pip","cls","delete","append"]
 	def __init__(self, redisOperator):
 		self.redisOperator=redisOperator
 
 	def support(self,cmd):
-		pass
+		cmdLines=cmdLines=cmd.split();
+		return self.supportCmds.conut(cmdLines[0])>0
 
 	def execute(self,cmd):
 		try:
@@ -112,22 +125,90 @@ class RedisCmdExcutor:
 		except Exception as e:
 			print('Unexpected error:{}'.format(e))
 			raise e
+
 #conn -url mysql://localhost:3306/mydb?charset=utf8mb4 -u xx -p
 #import select 'a' as key,'v' as value,'1' as op from x_table
 class SqlCmdExcutor:
+	__supportCmds=["conn"]
 	def __init__(self, redisOperator):
 		self.redisOperator=redisOperator
+		self.subCmdParser=__getSubCmdParaser()
+
+	def __getSubCmdParaser(self):
+		parser=argparse.ArgumentParser(prog='import', usage="import sql")
+		parser.add_argument('sql', nargs='?')
+		return parser
 
 	def support(self,cmd):
-		pass
+		cmdLines=cmdLines=cmd.split();
+		return self.supportCmds.conut(cmdLines[0])>0
+
+	def getCmdParser(self):
+		if(self.parser is not None):
+			return self.parser
+		parser=argparse.ArgumentParser(prog='conn', usage="conn [options]",
+									 formatter_class=argparse.RawDescriptionHelpFormatter,
+									 description=textwrap.dedent('''
+									 Sub cli to connection db. 
+									 '''))
+		parser.add_argument("-url",
+						required=True,
+						type=str,
+						help='db connect url')
+		parser.add_argument('-u',
+						required=False,
+						type=str,
+						help='db connect auth user account')
+		parser.add_argument('-p',
+						required=False,
+						type=str,
+						help='db connect user password')
+		self.parser=parser
+		return self.parser
+     	
+     	
+	
     #get sql connector
 	def execute(self,cmd):
-		self.c
+		 	cmdLines=cmd.split()
+		 	if(len(cmdLines)<2):
+		 		print("Express error,such as:conn -url url -u user -p pwd")
+		 		return
+		 	parser,args=None
+		 	try:
+		 		parser=getCmdParser()
+		 		args=parser.parse_args(cmdLines[1:])
+		 		self.sqlOperator=getSqlOperator(slef,args)
+		 	except Exception as e:
+		 		print("Cmd error,{}".format(e))
+		 		parser.print_help()
+		 		return
+		 	#
+		 	dataList=[]
+		 	supportCmds=["import","cls","quit"]
+		 	while True:
+		 		cmd=input('$ ');
+		 		if len(cmd.strip())<1:
+		 			continue
+		 		cmdLines=cmd.split()
+		 		if supportCmds.count(cmdLines[0])<1:
+		 			print("This cmd:{} is not support".format(cmdLines[0]))
+		 			self.subCmdParser.print_help()
+		 			continue
+		 		if "cls"==cmdLines[0]:
+		 			self.cls()
+		 			continue
+		 		if "quit"==cmdLines[0]:
+		 			return
+
+	def __cls(self,line):
+		os.system('cls')
+	def __operRedis(self,cmds):
 		pass
-		
-
-
-
+	def getSqlOperator(self,cmd):
+		return MysqlOperator(cmd)
+	    
+ 
 class CmdExcutorFactory:
 	def __init__(self,redisClient):
 		self.redisClient=redisClient
@@ -162,7 +243,7 @@ def parse_options():
 
 def executeCmd():
 	rclient=redis.Redis(connection_pool = redis_pool);
-	while 1<2:
+	while True:
 		try:
 			cmd=input('$ ');
 			if len(cmd.strip())<=0:
