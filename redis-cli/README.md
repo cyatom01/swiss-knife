@@ -1,13 +1,12 @@
 # Python redis cli
 
 ## Prepare environment
-1. Install Python,you can access python site
-2. Install Python library with the following cmd:
+1. Install python,you can access [python site](https://www.python.org/)
+2. Install dependens library with the following cmd:
 ```
-  pip 
-  pip
-  pip
-
+  pip install reids
+  pip install pymysql
+  pip install PrettyTable
 ```
 ## Cli Usage
 ```
