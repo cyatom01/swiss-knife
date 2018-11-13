@@ -60,7 +60,9 @@ class RedisOperator:
 			 	line=line.strip()
 			 	if(len(line)<0):
 			 		continue
-			 	cmdLines=line.split()
+			 	cmdLines=line.split() 	
+			 	if(cmdLines[0].startswith('#')):
+			 		continue
 			 	print(cmdLines)
 			 	try:
 			 		if(len(cmdLines)==2):
@@ -68,7 +70,7 @@ class RedisOperator:
 			 		if(len(cmdLines)>=3):
 			 			 operator.methodcaller(cmdLines[0],cmdLines[1]," ".join(cmdLines[2:]))(pipeline)
 			 	except AttributeError as e:
-			 		 print('Unsupported operation,this cmd will be ignored:{}'.format(e))
+			 		 print('Unsupported operation,this cmd {} will be ignored. error info is:{}'.format(cmdLines,e))
 		pipeline.execute()
 
 	def delete(self,line):
