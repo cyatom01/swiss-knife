@@ -18,7 +18,7 @@
 First you should use cli connect redis.
 ```
    py redis_cli.py -host 127.0.0.1 -pwd password
-
+```
 And then you can do some things with the following cmd.
 ### Redis basic operation
 - 
@@ -39,8 +39,8 @@ set sample 0001
  If you want get data to redis,following cmd will be used:
 ```
 get key
-``
- **Example:**
+```
+**Example:**
 ```
 get sample
 ```
@@ -49,7 +49,7 @@ If you have many data want save to reids,first you can save cmds to a file,and u
 ```
 pip file
 ```
- **Example:**
+**Example:**
 ```
 ```
 The file content:
@@ -59,7 +59,7 @@ The file content:
 ## Redis advance operation
 - 
  1. **conn**  
- 2. **import ** 
+ 2. **import** 
 
 
 
