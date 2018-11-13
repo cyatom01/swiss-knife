@@ -32,7 +32,7 @@ class RedisOperator:
 			print("Express error,such as: set key value")
 			return False
 		redis=self.redis
-		redis.set(cmdLines[1], bytes(cmdLines[2:].join(), "utf8"))
+		redis.set(cmdLines[1], bytes(" ".join(cmdLines[2:]), "utf8"))
 		return True
 		
 	def get(self,line):
@@ -49,9 +49,10 @@ class RedisOperator:
 		if (len(cmdLines)<2):
 			print("Express error,such as: pip path")
 			return
-		exists=os.path.exists(cmdLines[1])
+		exists=os.path.exists(" ".join(cmdLines[1:]))
 		if not exists:
 			print("File not found.")
+			return
 		redis=self.redis
 		pipeline = redis.pipeline(transaction=False)
 		with open(cmdLines[1], 'rt') as f:
@@ -63,9 +64,9 @@ class RedisOperator:
 			 	print(cmdLines)
 			 	try:
 			 		if(len(cmdLines)==2):
-			 			 operator.methodcaller(cmdLines[0],cmdLines[1:].join())(pipeline)
+			 			 operator.methodcaller(cmdLines[0]," ".join(cmdLines[1:]))(pipeline)
 			 		if(len(cmdLines)>=3):
-			 			 operator.methodcaller(cmdLines[0],cmdLines[1],cmdLines[2:].join())(pipeline)
+			 			 operator.methodcaller(cmdLines[0],cmdLines[1]," ".join(cmdLines[2:]))(pipeline)
 			 	except AttributeError as e:
 			 		 print('Unsupported operation,this cmd will be ignored:{}'.format(e))
 		pipeline.execute()
@@ -88,7 +89,7 @@ class RedisOperator:
 			print("Express error,such as: append key value")
 			return
 		redis=self.redis
-		redis.append(cmdLines[1], cmdLines[2:].join())
+		redis.append(cmdLines[1]," ".join(cmdLines[2:]))
 		print(str(redis.get(cmdLines[1]),"utf8").strip())
 
 class MysqlOperator:
@@ -115,7 +116,7 @@ class MysqlOperator:
 			return data_rows
 
 	def destroy(self):
-		if self.conn is not NoneType:
+		if self.conn is not None:
 			self.conn.close()
 
 
@@ -213,6 +214,7 @@ class SqlCmdExcutor:
 			 		dataRows=self.sqlOperator.select(' '.join(cmdLines[1:]))
 			 		self.__operRedis(dataRows)
 		 	except Exception as e:
+		 		print("ccccc")
 		 		print("Occured error:{}".format(e))
 		 	finally:
 		 		if self.sqlOperator is not None:
@@ -248,14 +250,13 @@ class SqlCmdExcutor:
 				else:
 					print("Your choice is wrong. Please try agin.")
 					continue
-		failedRows=[]
+		failedRows,cmd=[[],'']
 		for i,v in enumerate(dataRows):
-			cmd
 			try:
-				if '1'==dataRows[2].strip():
-					cmd='set '+dataRows[0]+' '+dataRows[1]
-				if '0'==dataRows[2].strip():
-					cmd='delete '+dataRows[0]
+				if '1'==v[2].strip():
+					cmd='set {} {}'.format(v[0],v[1])
+				if '0'==v[2].strip():
+					cmd='delete {}'.format(v[0])
 				cmdLines=cmd.split()
 				operator.methodcaller(cmdLines[0],cmd)(self.redisOperator)
 			except Exception as e:
@@ -270,7 +271,7 @@ class SqlCmdExcutor:
 				print('{}  rows save failed.'.format(len(failedRows)))
 				print("********************")
 		else:
-			print("Save {} rows data to redis successfuly.".format(len(failedRows)))
+			print("Successfuly affect {} rows data.".format(len(dataRows)))
 
 	def getSqlOperator(self,args):
 		urlReg= re.compile('(?P<provider>(\\w+))://(?P<host>(\\d+.\\d+.\\d+.\\d+)):(?P<port>(\d+))/(?P<db>(\w+))')
@@ -344,8 +345,8 @@ def execute():
 				continue
 			excutor.execute(cmd)			
 		except Exception as e:
-			 print('Unexpected error:{}'.format(e))
-			 return	
+			print('Unexpected error:{}'.format(e))
+			return	
 def print_help():
 	pass
 

@@ -21,15 +21,15 @@ First you should use cli connect redis.
 And then you can do some things with the following cmd.
 ### Redis basic operation
 - 
- 1. **set** 
- 2. **get**
- 3. **pip**
+ 1. **set**  add key value to redis
+ 2. **get**  get data from redis by key
+ 3. **pip**  excute batch cmds
 
  If you want save data to redis,following cmd will be used:
  ```
  set key value
  ```
- **Example:**
+**Example:**
  ```
 set sample 0001
  ```
@@ -50,15 +50,45 @@ pip file
 ```
 **Example:**
 ```
+pip /home/user/data.txt
 ```
 The file content:
 ```
+set SERVICE_SWITCH_GLOBAL	0
+set SERVICE_SWITCH_TERMINALSALREQSERVICE_31	0
+set SERVICE_SWITCH_SINTERMCLESALEPRESERIVE_31	0
+set SERVICE_SWITCH_QRYCHKTERMSERVICE_31	0
+set SERVICE_SWITCH_TERMCLESALEPRESERVICE_31	0
+set SERVICE_SWITCH_TERMINALSTATECHGREQSERVICE_31	0
+set SERVICE_SWITCH_SELFTERMSUBSERVICE_31	0
+set SERVICE_SWITCH_BATCHTERMSALESERVICE_31	0
+set SERVICE_SWITCH_SINTERMCLESALEINTFSERVICE_31	0
+delete SERVICE_SWITCH_TERMINALSALREQSERVICE_34
+delete SERVICE_SWITCH_SINTERMCLESALEPRESERIVE_34
+delete SERVICE_SWITCH_QRYCHKTERMSERVICE_34
 ```
 
 ## Redis advance operation
 - 
  1. **conn**  
  2. **import** 
+
+First connect database with some args:
+```
+ conn -url provider://ip:port/db -u user -p passowd
+```
+
+And then,use the following cmd to import data to redis.
+```
+import <select sql>
+```
+**Note:** select sql express must contains only 3 columns of data,the column named must be `Key` `Value` `O`.
+          O value is 0 or 1,1 means set data to redis,0 means delete data from redis.
+**Example:**
+```
+import select code as 'Key',name as 'Value','1' as 'O' from table_name
+```
+
 
 
 
