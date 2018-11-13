@@ -32,7 +32,7 @@ class RedisOperator:
 			print("Express error,such as: set key value")
 			return False
 		redis=self.redis
-		redis.set(cmdLines[1], bytes(cmdLines[2], "utf8"))
+		redis.set(cmdLines[1], bytes(cmdLines[2:].join(), "utf8"))
 		return True
 		
 	def get(self,line):
@@ -63,9 +63,9 @@ class RedisOperator:
 			 	print(cmdLines)
 			 	try:
 			 		if(len(cmdLines)==2):
-			 			 operator.methodcaller(cmdLines[0],cmdLines[1])(pipeline)
+			 			 operator.methodcaller(cmdLines[0],cmdLines[1:].join())(pipeline)
 			 		if(len(cmdLines)>=3):
-			 			 operator.methodcaller(cmdLines[0],cmdLines[1],cmdLines[2])(pipeline)
+			 			 operator.methodcaller(cmdLines[0],cmdLines[1],cmdLines[2:].join())(pipeline)
 			 	except AttributeError as e:
 			 		 print('Unsupported operation,this cmd will be ignored:{}'.format(e))
 		pipeline.execute()
@@ -88,7 +88,7 @@ class RedisOperator:
 			print("Express error,such as: append key value")
 			return
 		redis=self.redis
-		redis.append(cmdLines[1], cmdLines[2])
+		redis.append(cmdLines[1], cmdLines[2:].join())
 		print(str(redis.get(cmdLines[1]),"utf8").strip())
 
 class MysqlOperator:
