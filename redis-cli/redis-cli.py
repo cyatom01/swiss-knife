@@ -58,7 +58,7 @@ class RedisOperator:
 		with open(cmdLines[1], 'rt') as f:
 			 for (num,line) in enumerate(f):
 			 	line=line.strip()
-			 	if(len(line)<0):
+			 	if(len(line) <= 0):
 			 		continue
 			 	cmdLines=line.split() 	
 			 	if(cmdLines[0].startswith('#')):
